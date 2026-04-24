@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вода · дневник</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --ink: #1a2332;
+    --ink-soft: #4a5568;
+    --water-deep: #1e4d6b;
+    --water-mid: #3a7ca5;
+    --water-light: #7cb8d4;
+    --accent: #d97757;
+    --paper: #faf8f3;
+    --line: rgba(26, 35, 50, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 20% 10%, rgba(124, 184, 212, 0.15), transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(217, 119, 87, 0.08), transparent 50%),
+      var(--bg);
+    padding: 40px 24px 80px;
+  }
+
+  .page {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+
+  .logo span {
+    font-style: normal;
+    font-weight: 300;
+    opacity: 0.5;
+    margin-left: 4px;
+  }
+
+  .date {
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+
+  .amount {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(72px, 20vw, 120px);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--water-deep);
+    position: relative;
+    display: inline-block;
+  }
+
+  .amount .unit {
+    font-size: 0.3em;
+    font-style: italic;
+    color: var(--ink-soft);
+    vertical-align: super;
+    margin-left: 4px;
+    font-weight: 400;
+  }
+
+  .glasses-count {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  .glass-container {
+    position: relative;
+    width: 200px;
+    height: 260px;
+    margin: 0 auto 40px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s ease;
+  }
+
+  .glass-container:active {
+    transform: scale(0.97);
+  }
+
+  .glass-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .glass-outline {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .water-fill {
+    fill: url(#waterGradient);
+    transition: y 0.6s cubic-bezier(0.4, 0, 0.2, 1), height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .wave-path {
+    fill: var(--water-mid);
+    opacity: 0.4;
+  }
+
+  .tap-hint {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+    font-style: italic;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+
+  .add-btn {
+    display: block;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto 24px;
+    padding: 22px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .add-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--water-deep);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .add-btn span {
+    position: relative;
+    z-index: 1;
+  }
+
+  .add-btn:hover::before {
+    transform: translateY(0);
+  }
+
+  .add-btn:active {
+    transform: scale(0.98);
+  }
+
+  .progress-section {
+    margin-bottom: 40px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .progress-header .goal-label {
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+  }
+
+  .progress-header .goal-value {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--water-deep);
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: rgba(26, 35, 50, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--water-mid), var(--water-light));
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .achievement {
+    text-align: center;
+    margin-top: 16px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: all 0.4s ease;
+  }
+
+  .achievement.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+  }
+
+  .ghost-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    padding: 10px 20px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ghost-btn:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .ghost-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .goal-setter {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+
+  .goal-setter .label {
+    margin-bottom: 16px;
+  }
+
+  .goal-options {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .goal-chip {
+    background: transparent;
+    border: 1px solid var(--line);
+    padding: 8px 16px;
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .goal-chip.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .goal-chip:hover:not(.active) {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  /* Ripple animation */
+  @keyframes ripple {
+    0% {
+      transform: scale(0);
+      opacity: 0.6;
+    }
+    100% {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--water-light);
+    pointer-events: none;
+    animation: ripple 0.8s ease-out;
+  }
+
+  /* Wave animation */
+  @keyframes wave {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-25px); }
+  }
+
+  .wave-anim {
+    animation: wave 3s ease-in-out infinite;
+  }
+
+  /* Splash on add */
+  @keyframes splash {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+
+  .glass-container.splash .water-fill-group {
+    animation: splash 0.5s ease;
+  }
+
+  footer {
+    margin-top: 60px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="logo">aqua<span>·journal</span></div>
+    <div class="date" id="today"></div>
+  </header>
+
+  <div class="hero">
+    <div class="label">сегодня выпито</div>
+    <div class="amount"><span id="ml">0</span><span class="unit">мл</span></div>
+    <div class="glasses-count" id="glasses-text">ещё ни одного стакана</div>
+  </div>
+
+  <div class="glass-container" id="glass">
+    <svg class="glass-svg" viewBox="0 0 200 260" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#7cb8d4" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#1e4d6b" stop-opacity="0.9"/>
+        </linearGradient>
+        <clipPath id="glassClip">
+          <path d="M 40 30 L 50 240 Q 50 250 60 250 L 140 250 Q 150 250 150 240 L 160 30 Z"/>
+        </clipPath>
+      </defs>
+
+      <!-- Water fill inside glass -->
+      <g clip-path="url(#glassClip)" class="water-fill-group">
+        <rect class="water-fill" id="water" x="0" y="260" width="200" height="0"/>
+        <!-- Decorative wave on top of water -->
+        <g id="wave-group" class="wave-anim" style="display:none;">
+          <path class="wave-path" id="wave-top" d="M -20 0 Q 10 -8, 40 0 T 100 0 T 160 0 T 220 0 L 220 20 L -20 20 Z"/>
+        </g>
+      </g>
+
+      <!-- Glass outline on top -->
+      <path class="glass-outline" d="M 40 30 L 50 240 Q 50 250 60 250 L 140 250 Q 150 250 150 240 L 160 30"/>
+      <!-- Glass rim -->
+      <ellipse class="glass-outline" cx="100" cy="30" rx="60" ry="6"/>
+    </svg>
+    <div class="tap-hint">нажми — +300 мл</div>
+  </div>
+
+  <button class="add-btn" id="addBtn"><span>+ стакан воды</span></button>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="goal-label">цель на день</span>
+      <span class="goal-value"><span id="current">0</span> / <span id="goal">2000</span> мл</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress" style="width: 0%"></div>
+    </div>
+    <div class="achievement" id="achievement">✦ цель достигнута ✦</div>
+  </div>
+
+  <div class="actions">
+    <button class="ghost-btn" id="undoBtn" disabled>↶ убрать</button>
+    <button class="ghost-btn" id="resetBtn">сбросить день</button>
+  </div>
+
+  <div class="goal-setter">
+    <div class="label">дневная норма</div>
+    <div class="goal-options" id="goalOptions">
+      <button class="goal-chip" data-goal="1500">1500 мл</button>
+      <button class="goal-chip active" data-goal="2000">2000 мл</button>
+      <button class="goal-chip" data-goal="2500">2500 мл</button>
+      <button class="goal-chip" data-goal="3000">3000 мл</button>
+    </div>
+  </div>
+
+  <footer>пей воду. живи долго.</footer>
+</div>
+
+<script>
+  const GLASS_ML = 300;
+  const STORAGE_PREFIX = 'water:';
+  const GOAL_KEY = 'water-goal';
+
+  const state = {
+    glasses: 0,
+    goal: 2000,
+  };
+
+  // DOM refs
+  const mlEl = document.getElementById('ml');
+  const currentEl = document.getElementById('current');
+  const goalEl = document.getElementById('goal');
+  const glassesText = document.getElementById('glasses-text');
+  const progressEl = document.getElementById('progress');
+  const waterEl = document.getElementById('water');
+  const waveGroup = document.getElementById('wave-group');
+  const glass = document.getElementById('glass');
+  const addBtn = document.getElementById('addBtn');
+  const undoBtn = document.getElementById('undoBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const achievementEl = document.getElementById('achievement');
+  const todayEl = document.getElementById('today');
+  const goalOptions = document.getElementById('goalOptions');
+
+  // Date helpers
+  function todayKey() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${STORAGE_PREFIX}${y}-${m}-${day}`;
+  }
+
+  function formatDate() {
+    const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+    const d = new Date();
+    return `${d.getDate()} ${months[d.getMonth()]}`;
+  }
+
+  // Russian pluralization for "стакан"
+  function pluralGlasses(n) {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'стакан';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'стакана';
+    return 'стаканов';
+  }
+
+  // Storage helpers via localStorage
+  function loadState() {
+    const saved = localStorage.getItem(todayKey());
+    state.glasses = saved ? parseInt(saved, 10) || 0 : 0;
+    const savedGoal = localStorage.getItem(GOAL_KEY);
+    if (savedGoal) state.goal = parseInt(savedGoal, 10) || 2000;
+  }
+
+  function saveGlasses() {
+    localStorage.setItem(todayKey(), String(state.glasses));
+  }
+
+  function saveGoal() {
+    localStorage.setItem(GOAL_KEY, String(state.goal));
+  }
+
+  // Render
+  function render() {
+    const ml = state.glasses * GLASS_ML;
+    mlEl.textContent = ml;
+    currentEl.textContent = ml;
+    goalEl.textContent = state.goal;
+
+    if (state.glasses === 0) {
+      glassesText.textContent = 'ещё ни одного стакана';
+    } else {
+      glassesText.textContent = `${state.glasses} ${pluralGlasses(state.glasses)} · по 300 мл`;
+    }
+
+    // Progress bar
+    const pct = Math.min(100, (ml / state.goal) * 100);
+    progressEl.style.width = pct + '%';
+
+    // Water fill in glass: fills from bottom up
+    // Glass interior: y from 30 to 250, total height = 220
+    const fillPct = Math.min(1, ml / state.goal);
+    const totalH = 220;
+    const filledH = Math.round(totalH * fillPct);
+    const filledY = 250 - filledH;
+    waterEl.setAttribute('y', filledY);
+    waterEl.setAttribute('height', filledH);
+
+    // Show wave only when there's water
+    if (fillPct > 0.02) {
+      waveGroup.style.display = 'block';
+      // Wave sits at the top edge of the water rect
+      waveGroup.setAttribute('transform', `translate(0, ${filledY})`);
+    } else {
+      waveGroup.style.display = 'none';
+    }
+
+    // Achievement
+    if (ml >= state.goal && state.goal > 0) {
+      achievementEl.classList.add('show');
+    } else {
+      achievementEl.classList.remove('show');
+    }
+
+    // Undo state
+    undoBtn.disabled = state.glasses === 0;
+
+    // Update goal chips
+    document.querySelectorAll('.goal-chip').forEach(chip => {
+      chip.classList.toggle('active', parseInt(chip.dataset.goal, 10) === state.goal);
+    });
+  }
+
+  // Ripple effect on click
+  function addRipple(e) {
+    const rect = glass.getBoundingClientRect();
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    const size = 40;
+    ripple.style.width = ripple.style.height = size + 'px';
+    const x = (e.clientX || rect.left + rect.width / 2) - rect.left - size / 2;
+    const y = (e.clientY || rect.top + rect.height / 2) - rect.top - size / 2;
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    glass.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 800);
+  }
+
+  // Actions
+  function addGlass(e) {
+    const wasAtGoal = state.glasses * GLASS_ML >= state.goal;
+    state.glasses++;
+    render();
+    saveGlasses();
+
+    // Splash animation
+    glass.classList.add('splash');
+    setTimeout(() => glass.classList.remove('splash'), 500);
+    if (e) addRipple(e);
+
+    // Celebration if just hit the goal
+    const nowAtGoal = state.glasses * GLASS_ML >= state.goal;
+    if (!wasAtGoal && nowAtGoal) {
+      celebrate();
+    }
+  }
+
+  function undo() {
+    if (state.glasses === 0) return;
+    state.glasses--;
+    render();
+    saveGlasses();
+  }
+
+  function reset() {
+    if (state.glasses === 0) return;
+    if (!confirm('Сбросить счётчик на сегодня?')) return;
+    state.glasses = 0;
+    render();
+    saveGlasses();
+  }
+
+  function celebrate() {
+    // Little confetti of drops
+    for (let i = 0; i < 12; i++) {
+      const drop = document.createElement('div');
+      drop.style.position = 'fixed';
+      drop.style.left = (50 + (Math.random() - 0.5) * 40) + '%';
+      drop.style.top = '40%';
+      drop.style.width = '8px';
+      drop.style.height = '12px';
+      drop.style.background = `hsl(${195 + Math.random() * 30}, 60%, ${50 + Math.random() * 20}%)`;
+      drop.style.borderRadius = '50% 50% 50% 50% / 60% 60% 40% 40%';
+      drop.style.pointerEvents = 'none';
+      drop.style.zIndex = '1000';
+      drop.style.transition = 'all 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+      document.body.appendChild(drop);
+      requestAnimationFrame(() => {
+        drop.style.transform = `translate(${(Math.random() - 0.5) * 400}px, ${300 + Math.random() * 200}px) rotate(${(Math.random() - 0.5) * 360}deg)`;
+        drop.style.opacity = '0';
+      });
+      setTimeout(() => drop.remove(), 1200);
+    }
+  }
+
+  // Event listeners
+  glass.addEventListener('click', addGlass);
+  addBtn.addEventListener('click', addGlass);
+  undoBtn.addEventListener('click', undo);
+  resetBtn.addEventListener('click', reset);
+
+  goalOptions.addEventListener('click', (e) => {
+    const chip = e.target.closest('.goal-chip');
+    if (!chip) return;
+    state.goal = parseInt(chip.dataset.goal, 10);
+    render();
+    saveGoal();
+  });
+
+  // Init
+  (function init() {
+    todayEl.textContent = formatDate();
+    loadState();
+    render();
+  })();
+</script>
+</body>
+</html>
