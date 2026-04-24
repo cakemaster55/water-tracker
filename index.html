@@ -2,8 +2,32 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Вода · дневник</title>
+<!-- PWA / iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Вода">
+<meta name="theme-color" content="#f4f1ea">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23f4f1ea'/%3E%3Cpath d='M90 30 C90 30 50 80 50 110 C50 132 68 150 90 150 C112 150 130 132 130 110 C130 80 90 30 90 30Z' fill='%233a7ca5'/%3E%3C/svg%3E">
+<script>
+  // Inline manifest for PWA
+  const manifest = {
+    name: "Вода · дневник",
+    short_name: "Вода",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#f4f1ea",
+    theme_color: "#f4f1ea",
+    orientation: "portrait"
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+  const manifestURL = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = manifestURL;
+  document.head.appendChild(link);
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -20,13 +44,17 @@
     --line: rgba(26, 35, 50, 0.12);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
 
   html, body {
     background: var(--bg);
     color: var(--ink);
     font-family: 'Outfit', sans-serif;
-    min-height: 100vh;
     overflow-x: hidden;
   }
 
@@ -35,7 +63,13 @@
       radial-gradient(circle at 20% 10%, rgba(124, 184, 212, 0.15), transparent 50%),
       radial-gradient(circle at 80% 90%, rgba(217, 119, 87, 0.08), transparent 50%),
       var(--bg);
-    padding: 40px 24px 80px;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    padding: env(safe-area-inset-top, 20px) 24px env(safe-area-inset-bottom, 24px);
+    padding-top: max(env(safe-area-inset-top), 40px);
+    padding-bottom: max(env(safe-area-inset-bottom), 32px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .page {
@@ -47,9 +81,9 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding-bottom: 28px;
+    padding-bottom: 20px;
     border-bottom: 1px solid var(--line);
-    margin-bottom: 48px;
+    margin-bottom: 28px;
   }
 
   .logo {
@@ -76,7 +110,7 @@
 
   .hero {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 28px;
   }
 
   .label {
@@ -116,12 +150,13 @@
 
   .glass-container {
     position: relative;
-    width: 200px;
-    height: 260px;
-    margin: 0 auto 40px;
+    width: 160px;
+    height: 210px;
+    margin: 0 auto 52px;
     cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     transition: transform 0.2s ease;
   }
 
@@ -171,8 +206,8 @@
     display: block;
     width: 100%;
     max-width: 360px;
-    margin: 0 auto 24px;
-    padding: 22px;
+    margin: 0 auto 20px;
+    padding: 20px;
     background: var(--ink);
     color: var(--paper);
     border: none;
@@ -183,6 +218,8 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
@@ -277,12 +314,14 @@
     background: transparent;
     border: 1px solid var(--line);
     color: var(--ink-soft);
-    padding: 10px 20px;
+    padding: 12px 20px;
     font-family: 'Outfit', sans-serif;
     font-size: 12px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition: all 0.2s ease;
   }
 
@@ -297,8 +336,8 @@
   }
 
   .goal-setter {
-    margin-top: 48px;
-    padding-top: 32px;
+    margin-top: 32px;
+    padding-top: 24px;
     border-top: 1px solid var(--line);
     text-align: center;
   }
@@ -317,11 +356,13 @@
   .goal-chip {
     background: transparent;
     border: 1px solid var(--line);
-    padding: 8px 16px;
+    padding: 10px 16px;
     font-family: 'Fraunces', serif;
     font-size: 14px;
     color: var(--ink-soft);
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition: all 0.2s ease;
   }
 
@@ -378,7 +419,7 @@
   }
 
   footer {
-    margin-top: 60px;
+    margin-top: 36px;
     text-align: center;
     font-size: 11px;
     color: var(--ink-soft);
